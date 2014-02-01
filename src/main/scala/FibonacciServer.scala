@@ -1,7 +1,7 @@
 import com.twitter.finagle.dispatch.SerialServerDispatcher
 import com.twitter.finagle.netty3.Netty3Listener
 import com.twitter.finagle.server._
-import com.twitter.finagle.Service
+import com.twitter.finagle.{Filter, Service}
 import com.twitter.util.{Await, Future}
 
 /**
@@ -83,4 +83,14 @@ class FanoutFibonacciCalculator(
 class FibonacciService(calculator: FibonacciCalculator) extends Service[String, String] {
   def apply(req: String): Future[String] =
     calculator.calculate(BigInt(req)) map { _.toString }
+}
+
+/**
+ * A simple log filter.
+ */
+object LogStringFilter extends Filter[String, String, String, String] {
+  def apply(req: String, service: Service[String, String]): Future[String] = {
+    println("Got a request: " + req)
+    service(req)
+  }
 }

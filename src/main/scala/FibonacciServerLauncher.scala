@@ -15,7 +15,7 @@ object FibonacciServerLauncher {
   def main(args: Seq[String]): Unit = args match {
     case Seq("leaf", port) =>
       val service = new FibonacciService(LocalFibonacciCalculator)
-      Await.ready(FibonacciServer.serve(":" + port, service))
+      Await.ready(FibonacciServer.serve(":" + port, LogStringFilter andThen service))
     case Seq("node", port, left, right) => 
       val lt = new RemoteFibonacciCalculator(FibonacciClient.newService("localhost:" + left))
       val rt = new RemoteFibonacciCalculator(FibonacciClient.newService("localhost:" + right))
